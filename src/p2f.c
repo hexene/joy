@@ -418,6 +418,8 @@ static void flow_key_copy (struct flow_key *dst, const struct flow_key *src) {
     dst->sp = src->sp;
     dst->dp = src->dp;
     dst->prot = src->prot;
+    memcpy(dst->h_source, src->h_source, ETH_ALEN);
+    memcpy(dst->h_dest,src->h_dest, ETH_ALEN);
 }
 
 #define MAX_TTL 255
@@ -1367,6 +1369,9 @@ static void flow_record_print_json (const struct flow_record *record) {
      */
     zprintf(output, "{");
 
+    zprintf(output, "\"smac\":\"%s\",", ether_ntoa((struct ether_addr*)rec->key.h_source));
+    zprintf(output, "\"dmac\":\"%s\",", ether_ntoa((struct ether_addr*)rec->key.h_dest));
+
     if (ipv4_addr_needs_anonymization(&rec->key.sa)) {
         zprintf(output, "\"sa\":\"%s\",", addr_get_anon_hexstring(&rec->key.sa));
     } else {
@@ -1801,6 +1806,8 @@ struct flow_record *flow_key_get_twin (const struct flow_key *key) {
         twin.sp = key->dp;
         twin.dp = key->sp;
         twin.prot = key->prot;
+        memcpy(twin.h_source, key->h_source, ETH_ALEN);
+        memcpy(twin.h_dest,key->h_dest, ETH_ALEN);
 
         return flow_record_list_find_record_by_key(&flow_record_list_array[flow_key_hash(&twin)], &twin);
 

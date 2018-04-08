@@ -867,6 +867,7 @@ void process_packet (unsigned char *ignore, const struct pcap_pkthdr *header,
     uint16_t ether_type = 0,vlan_ether_type = 0;
 
     /* declare pointers to packet headers */
+    const struct ethernet_hdr *ethernet;
     const struct ip_hdr *ip;
     unsigned int transport_len;
     unsigned int ip_hdr_len;
@@ -879,7 +880,10 @@ void process_packet (unsigned char *ignore, const struct pcap_pkthdr *header,
     joy_log_info("++++++++++ Packet %lu ++++++++++", flocap_stats_get_num_packets());
     //  packet_count++;
 
-    // ethernet = (struct ethernet_hdr*)(packet);
+    ethernet = (struct ethernet_hdr*)(packet);
+    memcpy(key.h_source, ethernet->src_addr, ETHERNET_ADR_LEN);
+    memcpy(key.h_dest, ethernet->dst_addr, ETHERNET_ADR_LEN);
+
     ether_type = ntohs(*(uint16_t *)(packet + 12));//Offset to get ETH_TYPE
     /* Support for both normal ethernet and 802.1q . Distinguish between 
      * the two accepted types

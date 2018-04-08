@@ -50,6 +50,7 @@
 #include <sys/socket.h>  
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netinet/ether.h>
 #endif
 
 #include <sys/stat.h>
@@ -86,6 +87,7 @@ struct tcp_info {
 
 #define FLOW_LIST_CHECK_EXPIRE 0
 #define FLOW_LIST_PRINT_ALL 1
+#define ETH_ALEN 6		/* Octets in one ethernet addr	 */
 
 struct flow_key {
     struct in_addr sa;
@@ -93,6 +95,8 @@ struct flow_key {
     unsigned short int sp;
     unsigned short int dp;
     unsigned short int prot;
+    unsigned char h_source[ETH_ALEN];     /*!< source mac address                  */
+    unsigned char h_dest[ETH_ALEN];       /*!< destination mac address             */
 };
 
 #include "procwatch.h"
